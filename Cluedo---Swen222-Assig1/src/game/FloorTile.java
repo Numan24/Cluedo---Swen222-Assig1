@@ -1,3 +1,4 @@
+package game;
 
 public class FloorTile extends Tile {
   Player player;

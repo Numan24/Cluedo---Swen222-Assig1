@@ -1,4 +1,6 @@
-import java.util.List;
+package game;
+
+import java.util.*;
 
 
 public class Room extends RoomEntrance {
