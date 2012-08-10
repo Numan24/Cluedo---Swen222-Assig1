@@ -3,10 +3,14 @@ package game;
 import java.util.*;
 
 
-public class Room extends RoomEntrance {
+public class Room extends Tile {
 
 
   List<Player> players;
+  
+  public Room() {
+    representation = "R";
+  }
   
   protected boolean isOccupied() {
     return false; // we can have as many player as we want in a room

@@ -3,14 +3,25 @@ import java.util.*;
 
 
 public abstract class Tile {
-  private Set<Tile> connections;
+  public static final int reprSize = 2; 
   
-  public void addConnection(Tile t) {
-    connections.add(t);
+  protected Map<String, Tile> connections;
+  protected String representation = "!";
+  
+  public String toString() {
+    String ret = representation;
+    while (ret.length() < reprSize)
+      ret += " ";
+    return ret;
   }
-  public Set<Tile> getConnections() {
-    return Collections.unmodifiableSet(connections);
+  
+  public void addConnection(String description, Tile t) {
+    connections.put(description, t);
   }
+  public Map<String, Tile> getConnections() {
+    return Collections.unmodifiableMap(connections);
+  }
+
   
   /**
    * Helper for movePlayer(). Checks whether the
