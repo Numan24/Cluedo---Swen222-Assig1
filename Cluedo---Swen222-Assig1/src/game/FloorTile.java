@@ -6,14 +6,20 @@ public class FloorTile extends Tile {
   private final String originalRepr;
   
   public FloorTile(String repr) {
-    representation = repr;
     originalRepr = repr;
   }
   
-  protected boolean isOccupied() {
-    return player != null;
+  protected void addPlayer(Player p) {  player = p;    }
+  protected void remPlayer(Player p) {  player = null; }
+  
+  public String toString() {
+    if (player != null) return player.toString();
+    else                return originalRepr;  
   }
 
-  protected void addPlayer(Player p) {  player = p;    representation = p.toString();  }
-  protected void remPlayer(Player p) {  player = null; representation = originalRepr;  }
+  @Override
+  public boolean canMoveHere(Player p) {
+    if (p == player) return true; // a player can stand still
+    return player == null;
+  }
 }

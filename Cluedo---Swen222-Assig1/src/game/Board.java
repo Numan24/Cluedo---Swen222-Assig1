@@ -10,13 +10,25 @@ import java.util.*;
  */
 public class Board {
 
+  public static final Map<Integer, String> roomNames = new HashMap<Integer, String>();
+  static {
+    roomNames.put(0, "spa");
+    roomNames.put(1, "theater");
+    roomNames.put(2, "living room");
+    roomNames.put(3, "observatory");
+    roomNames.put(4, "patio");
+    roomNames.put(5, "cluedo room");
+    roomNames.put(6, "hall");
+    roomNames.put(7, "kitchen");
+    roomNames.put(8, "dining room");
+    roomNames.put(9, "guest house");
+  }
 
   List<List<Tile>> board = new ArrayList<List<Tile>>();
   
   Map<Integer, Room> rooms          = new HashMap<Integer, Room>();
-  Map<Integer, Tile> roomEntrances  = new HashMap<Integer, Tile>();
   Map<Integer, Tile> playerSpawns   = new HashMap<Integer, Tile>();
-  int roomCount;
+  Map<Integer, RoomEntrance> roomEntrances = new HashMap<Integer, RoomEntrance>();
   int entranceCount;
   int spawnCount;
   
@@ -35,23 +47,25 @@ public class Board {
             // add it to a map if it is a special tile
             switch (token.charAt(0)) {
               case '.':
-              case '?':
+              case '?': // floor
                 newTile = new FloorTile(".");
                 break;
-              case 'E':
-                newTile = new FloorTile("e");
-                roomEntrances.put(entranceCount, newTile);
+              case 'E': // room Entrance
+                roomEntrances.put(entranceCount, new RoomEntrance(
+                  Integer.parseInt(token.substring(1)) // the roomID that we're entering
+                ));
+                newTile = roomEntrances.get(entranceCount);
                 ++entranceCount;
                 break;
-              case 'P':
+              case 'P': // Player Spawn
                 newTile = new FloorTile(".");
                 playerSpawns.put(spawnCount, newTile);
-                ++roomCount;
+                ++spawnCount;
                 break;
-              case 'R':
-                rooms.put(roomCount, new Room());
-                newTile = rooms.get(roomCount);
-                ++roomCount;
+              case 'R': // Room
+                int roomID = Integer.parseInt(token.substring(1));
+                rooms.put(roomID, new Room());
+                newTile = rooms.get(roomID);
                 break;
               default:
                 System.out.println("Unknown Tile: " + token.charAt(0));
@@ -59,16 +73,61 @@ public class Board {
             boardRow.add(newTile);
           }
         }
-
-        System.out.println();
         board.add(boardRow);
       }
     }
     catch (IOException e) {
       e.printStackTrace();
     }
+    
+    for (RoomEntrance e : roomEntrances.values()) {
+      Room r = rooms.get(e.getRoomID());
+      e.addConnection("Enter the " + roomNames.get(e.getRoomID()), r);
+      r.addConnection("Exit through door", e);
+    }
+    
+    // connections between corner rooms.
+    // hard-coded but at least done in a nice way
+    buildTunnel(0, 9);
+    buildTunnel(9, 0);
+    buildTunnel(3, 7);
+    buildTunnel(7, 2);
+    
+
+    for (int i=0; i<board.size(); ++i) {
+      List<Tile> row = board.get(i);
+      for (int j=0; j<row.size(); ++j) {
+        addConnection(i, j, i-1, j+0, "Move up"   );
+        addConnection(i, j, i+0, j+1, "Move right");
+        addConnection(i, j, i+1, j+0, "Move down" );
+        addConnection(i, j, i+0, j-1, "Move left" );
+      }
+    }
   }
   
+  private void addConnection(int row1, int col1, int row2, int col2, String description) {
+    if (!isInBounds(row1, col1)) return;
+    if (!isInBounds(row2, col2)) return;
+    Tile a = board.get(row1).get(col1);
+    Tile b = board.get(row2).get(col2);
+    if (a==null || b==null) return;
+    a.addConnection(description, b);
+  }
+  
+  /** A simple check to see whether a point is on our board */
+  public boolean isInBounds(int row, int col) {
+    if (row < 0 || col < 0)           return false;
+    if (row >= board.size())          return false;
+    if (col >= board.get(row).size()) return false;
+    return true;
+  }
+  
+  private void buildTunnel(int roomID_from, int roomID_to) {
+    rooms.get(roomID_from).addConnection(
+      "Use tunnel to the " + roomNames.get(roomID_to), 
+      rooms.get(roomID_to)
+    );
+  }
 
   @Override
   public String toString() {
@@ -77,9 +136,9 @@ public class Board {
       for (Tile t : row) {
         if (t == null)
           for (int i=0; i<Tile.reprSize; ++i)
-            ret += " "; // YAY, scew java code
+            ret += " "; // YAY, scew java code >.>
         else
-          ret += t.toString();
+          ret += t.representation();
       }
       ret += '\n';
     }

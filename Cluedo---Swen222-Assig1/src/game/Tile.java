@@ -3,13 +3,14 @@ import java.util.*;
 
 
 public abstract class Tile {
-  public static final int reprSize = 2; 
+  public static final int reprSize = 2; // how wide every tile is in text
   
-  protected Map<String, Tile> connections;
-  protected String representation = "!";
+  protected Map<String, Tile> connections = new HashMap<String, Tile>();
   
-  public String toString() {
-    String ret = representation;
+  public String toString() { return "!"; }
+  
+  public String representation() {
+    String ret = toString();
     while (ret.length() < reprSize)
       ret += " ";
     return ret;
@@ -18,20 +19,17 @@ public abstract class Tile {
   public void addConnection(String description, Tile t) {
     connections.put(description, t);
   }
-  public Map<String, Tile> getConnections() {
+  public Map<String, Tile> connections() {
     return Collections.unmodifiableMap(connections);
   }
 
   
   /**
-   * Helper for movePlayer(). Checks whether the
-   * tile is "full". if a tile is occupied another
-   * player can't move on it
-   * @return
+   * A check whether a player can move here
+   * @param p The player that tries to move here
+   * @return whether the player is allowed
    */
-  abstract protected boolean isOccupied();
-  
-  
+  abstract public boolean canMoveHere(Player p);
   
   /** Adds player p to internal state. assumes !isOccupied() */ 
   abstract protected void addPlayer(Player p);
@@ -45,7 +43,7 @@ public abstract class Tile {
    * @return
    */
   protected boolean movePlayer(Player p) {
-    if (isOccupied()) return false;
+    if (! canMoveHere(p)) return false;
     addPlayer(p);
     return true;
   }

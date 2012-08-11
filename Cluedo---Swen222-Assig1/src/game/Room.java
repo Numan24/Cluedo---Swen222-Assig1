@@ -5,12 +5,9 @@ import java.util.*;
 
 public class Room extends Tile {
 
-
-  List<Player> players;
+  List<Player> players = new ArrayList<Player>();
   
-  public Room() {
-    representation = "R";
-  }
+  public Room() { }
   
   protected boolean isOccupied() {
     return false; // we can have as many player as we want in a room
@@ -23,4 +20,20 @@ public class Room extends Tile {
     System.out.println("do you want to make a suggestion?"); // TODO 
     return movePlayer(p);
   }
+  
+  public String toString() {
+    if (players.size() == 0) return "r";
+    
+    // return the selected 
+    String lastPlayerRepr = "";
+    for (Player p : players) {
+      lastPlayerRepr = p.toString();
+      if (p.selected()) // if uppercase
+        return lastPlayerRepr;
+    }
+    return lastPlayerRepr;
+  }
+
+  @Override
+  public boolean canMoveHere(Player p) { return true; } 
 }
