@@ -4,11 +4,13 @@ import java.io.*;
 import java.util.*;
 
 /** 
- * A simple container for the set of Tiles
+ * Keeps information about what the players can interact with
  * @author dom
  *
  */
 public class Board {
+  
+  /* =========== Static variables =========== */
 
   public static final Map<Integer, String> roomNames = new HashMap<Integer, String>();
   static {
@@ -17,13 +19,31 @@ public class Board {
     roomNames.put(2, "living room");
     roomNames.put(3, "observatory");
     roomNames.put(4, "patio");
-    roomNames.put(5, "cluedo room");
+    roomNames.put(5, "swimming pool"); // accusation room
     roomNames.put(6, "hall");
     roomNames.put(7, "kitchen");
     roomNames.put(8, "dining room");
     roomNames.put(9, "guest house");
   }
+  
+  public static final List<String> weapons = new ArrayList<String>();
+  static {
+    weapons.add("rope");
+    weapons.add("candlestick");
+    weapons.add("knife");
+    weapons.add("pistol");
+    weapons.add("baseball bat");
+    weapons.add("dumbell");
+    weapons.add("trophy");
+    weapons.add("poison");
+    weapons.add("axe");
+    Collections.shuffle(weapons); // this will randomise their spawn locations
+  }
 
+  
+  /* =========== Fields =========== */
+
+  
   List<List<Tile>> board = new ArrayList<List<Tile>>();
   
   Map<Integer, Room> rooms          = new HashMap<Integer, Room>();
@@ -32,9 +52,13 @@ public class Board {
   int entranceCount;
   int spawnCount;
   
-  public Board() {
+  
+  /* =========== Constructor =========== */
 
+  
+  public Board() {
     try {
+      // parse the board
       Scanner lineScan = new Scanner(new File("board.tab"));
       while (lineScan.hasNextLine()) {
         List<Tile> boardRow = new ArrayList<Tile>();
@@ -76,10 +100,15 @@ public class Board {
         board.add(boardRow);
       }
     }
-    catch (IOException e) {
-      e.printStackTrace();
+    catch (IOException e) { e.printStackTrace(); }
+    
+    // add weapons to rooms
+    for (int i=0; i<weapons.size(); ++i) {
+      int roomID = i;
+      if (i >= 5) ++roomID; // the center room doesn't have a weapon
     }
     
+    // add connections between rooms/entrances
     for (RoomEntrance e : roomEntrances.values()) {
       Room r = rooms.get(e.getRoomID());
       e.addConnection("Enter the " + roomNames.get(e.getRoomID()), r);
@@ -92,8 +121,8 @@ public class Board {
     buildTunnel(9, 0);
     buildTunnel(3, 7);
     buildTunnel(7, 3);
-    
 
+    // connections between adjacent tiles
     for (int i=0; i<board.size(); ++i) {
       List<Tile> row = board.get(i);
       for (int j=0; j<row.size(); ++j) {
@@ -104,6 +133,9 @@ public class Board {
       }
     }
   }
+  
+  
+  /* =========== Constructor helpers =========== */
   
   private void addConnection(int row1, int col1, int row2, int col2, String description) {
     if (!isInBounds(row1, col1)) return;
@@ -129,6 +161,8 @@ public class Board {
     );
   }
 
+  /* =========== Methods =========== */
+
   @Override
   public String toString() {
     String ret = "";
@@ -136,7 +170,7 @@ public class Board {
       for (Tile t : row) {
         if (t == null)
           for (int i=0; i<Tile.reprSize; ++i)
-            ret += " "; // YAY, scew java code >.>
+            ret += " "; // YAY, scew code >.>
         else
           ret += t.representation();
       }

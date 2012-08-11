@@ -8,6 +8,7 @@ public class Player {
   /* =========== Fields (with getters/setters) =========== */
   
   private Tile position;
+  public Tile position() { return position; }
   
   private String name;
   public String name() { return name; }
@@ -18,6 +19,11 @@ public class Player {
   
   private List<Action> availableActions = new ArrayList<Action>();
 
+  private List<String> cards = new ArrayList<String>();
+  public void addCard(String card) { cards.add(card); }
+  
+  private Cluedo game;
+  
   private int movesLeft = 0;
   public int movesLeft() { return movesLeft; }
   public void newTurn() {
@@ -27,21 +33,42 @@ public class Player {
   
   
   /* =========== Constructor =========== */
-  public Player(String name) {
+
+  public Player(String name, Cluedo game) {
     this.name = name;
+    this.game = game;
   }
-  
 
   /* =========== Methods =========== */
   
   /** puts the player at a position. Should only be used for initialisation! */
   public void spawn(Tile spawnPos) {
     position = spawnPos;
-    spawnPos.enter(Player.this);
+    spawnPos.enter(Player.this, null);
   }
 
   public String toString() {
     return (selected) ? "P" : "p";
+  }
+  
+  /**
+   * Asks the player whether he can refute any part of the suggestion
+   * @param s The suggestion that could be refuted
+   * @return The empty string (iff can't refute) or what has been refuted
+   */
+  public String refute(Suggestion s) {
+    if (canRefute(s.getPlayer()))  return "person";
+    if (canRefute(s.getWeapon()))  return "weapon";
+    if (canRefute(s.getRoom()  ))  return "room";
+    return "";
+  }
+  
+  /** if he have the said card we can refute */
+  private boolean canRefute(String card) {
+    for (String myCard : cards)
+      if (myCard == card)
+        return true;
+    return false;
   }
   
   /**
@@ -109,7 +136,7 @@ public class Player {
      * @return Whether the player was able to move there
      */
     public void execute() {
-      to.enter(Player.this);
+      to.enter(Player.this, game);
       if (position != null)
         position.leave(Player.this);
       position = to;

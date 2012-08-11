@@ -17,8 +17,8 @@ public class TileTests {
   }
   
   private void test_canMoveHere_FloorTile(FloorTile t) {
-    Player a = new Player("alice");
-    Player b = new Player("bob");
+    Player a = new Player("alice", null);
+    Player b = new Player("bob", null);
     assertTrue(t.canMoveHere(a));
     assertTrue(t.canMoveHere(b));
     a.spawn(t);  // move alice onto the tile

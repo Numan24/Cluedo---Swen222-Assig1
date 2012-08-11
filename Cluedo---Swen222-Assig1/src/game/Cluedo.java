@@ -10,33 +10,42 @@ import java.util.*;
  *
  */
 public class Cluedo {
+  
+  /* =========== Fields (with getters/setters) =========== */
+  
   private List<Player> players = new ArrayList<Player>();
+  public List<Player> players() { return Collections.unmodifiableList(players); }
+  
   private Player currentPlayer;
-  private int currentPlayerID = -1;
+  private int currentPlayerID = 0;
   private int playerCount;
   
   private Board board;
   
   private boolean running = true;
+
   
-  
+  /* =========== Constructor =========== */
+
   
   public Cluedo() {
     board = new Board();
 
     // we add all players but only use 3-6 some of them
-    players.add(new Player("Kasandra Scarlett"));
-    players.add(new Player("Jack Mustard"     ));
-    players.add(new Player("Diane White"      ));
-    players.add(new Player("Jacob Green"      ));
-    players.add(new Player("Eleanor Peacock"  ));
-    players.add(new Player("Victor Plum"      ));
+    players.add(new Player("Kasandra Scarlett", this));
+    players.add(new Player("Jack Mustard"     , this));
+    players.add(new Player("Diane White"      , this));
+    players.add(new Player("Jacob Green"      , this));
+    players.add(new Player("Eleanor Peacock"  , this));
+    players.add(new Player("Victor Plum"      , this));
 
     playerCount = 0;
     while (playerCount < 3) {
       System.out.println("how many players? (3-6)");
       playerCount = makeSelection(6);
     }
+    while (players.size() > playerCount) // remove all unused characters
+      players.remove(players.size()-1);
     
     // spawn our players
     for (int i=0; i<playerCount; ++i)
@@ -45,6 +54,10 @@ public class Cluedo {
     currentPlayer = players.get(0);
     currentPlayer.newTurn();
   }
+  
+  
+  /* =========== Game main loop =========== */
+
   
   public void mainLoop() {
     while (running) {
@@ -68,8 +81,49 @@ public class Cluedo {
     }
   }
   
+  
+  /* =========== Other methods =========== */
+
+  
+  public void makeSuggestion(Player suggestor) {
+    // prepare the suggestion
+    List<String> playerNames = new ArrayList<String>();
+    for (Player p : players) playerNames.add(p.name());
+    String roomName = "some room";
+    for (int i=0; i<Board.roomNames.size(); ++i)
+      if (board.rooms.get(i) == suggestor.position()) // assumes a player is in a room
+        roomName = Board.roomNames.get(i);
+    
+    // create the suggestion
+    Suggestion s = new Suggestion(
+      askQuestion("Who was the murderer?", playerNames),
+      roomName,
+      askQuestion("What was the murder weapon?", Board.weapons)
+    );
+    
+    // now check of any people who can refute this suggestion
+    for (Player refutor : players) {
+      String refuteReason = refutor.refute(s);
+      if (! refuteReason.equals("")) {
+        System.out.println(refutor.name() + " can refute the " + refuteReason);
+        return;
+      }
+    }
+    System.out.println("No one can refute this suggestion.  [press enter]");
+    new Scanner(System.in).nextLine(); // wait for a enter-press
+  }
+  
+  public static String askQuestion(String Question, List<String> answers) {
+    System.out.println(Question);
+    int i=0;
+    for (String answer : answers)
+      System.out.println("[" + (i++) + "] " + answer);
+    
+    return answers.get(makeSelection(answers.size())); // note: calls the method below
+  }
+  
   /**
-   * Reads lines from System.in until we get a number that is 0 <= n <= max
+   * Utility: Reads lines from System.in until we get a number that is 0 <= n <= max
    * @return The selection
    */
   public static int makeSelection(int max) {

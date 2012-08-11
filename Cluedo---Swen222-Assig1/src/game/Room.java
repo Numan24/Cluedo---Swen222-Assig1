@@ -16,14 +16,17 @@ public class Room extends Tile {
   protected void addPlayer(Player p) {  players.add(p);     }
   protected void remPlayer(Player p) {  players.remove(p);  }
   
-  public boolean enter(Player p) {
-    System.out.println("do you want to make a suggestion?");
-    System.out.println("[0] No");
-    System.out.println("[1] Yes");
-
-    int wantsTo = Cluedo.makeSelection(1); // TODO
-
-    return movePlayer(p);
+  public boolean enter(Player p, Cluedo game) {
+    if (! movePlayer(p)) return false;
+    
+    if (
+      Cluedo.askQuestion("do you want to make a murder suggestion?", Arrays.asList("No", "Yes"))
+      .equals("Yes")
+    ) {
+      game.makeSuggestion(p);
+    }
+    
+    return true;
   }
   
   public String toString() {
@@ -33,7 +36,7 @@ public class Room extends Tile {
     String lastPlayerRepr = "";
     for (Player p : players) {
       lastPlayerRepr = p.toString();
-      if (p.selected()) // if uppercase
+      if (p.selected())
         return lastPlayerRepr;
     }
     return lastPlayerRepr;

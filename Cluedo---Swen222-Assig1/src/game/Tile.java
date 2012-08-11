@@ -1,7 +1,12 @@
 package game;
 import java.util.*;
 
-
+/**
+ * A tile is anything on which a player can stand
+ * Each tile is connected to other tiles via the connections map.
+ * @author dom
+ *
+ */
 public abstract class Tile {
   public static final int reprSize = 2; // how wide every tile is in text
   
@@ -54,7 +59,7 @@ public abstract class Tile {
    * such as a room entrance  
    * @return Whether entering was successful
    */
-  public boolean enter(Player p) {
+  public boolean enter(Player p, Cluedo game) {
     return movePlayer(p);
   }
   
