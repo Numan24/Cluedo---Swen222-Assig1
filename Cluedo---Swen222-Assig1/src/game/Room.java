@@ -17,7 +17,12 @@ public class Room extends Tile {
   protected void remPlayer(Player p) {  players.remove(p);  }
   
   public boolean enter(Player p) {
-    System.out.println("do you want to make a suggestion?"); // TODO 
+    System.out.println("do you want to make a suggestion?");
+    System.out.println("[0] No");
+    System.out.println("[1] Yes");
+
+    int wantsTo = Cluedo.makeSelection(1); // TODO
+
     return movePlayer(p);
   }
   

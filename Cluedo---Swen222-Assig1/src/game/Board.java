@@ -83,7 +83,7 @@ public class Board {
     for (RoomEntrance e : roomEntrances.values()) {
       Room r = rooms.get(e.getRoomID());
       e.addConnection("Enter the " + roomNames.get(e.getRoomID()), r);
-      r.addConnection("Exit through door", e);
+      r.addConnection("Exit through door " + r.connections().size(), e);
     }
     
     // connections between corner rooms.
@@ -91,7 +91,7 @@ public class Board {
     buildTunnel(0, 9);
     buildTunnel(9, 0);
     buildTunnel(3, 7);
-    buildTunnel(7, 2);
+    buildTunnel(7, 3);
     
 
     for (int i=0; i<board.size(); ++i) {

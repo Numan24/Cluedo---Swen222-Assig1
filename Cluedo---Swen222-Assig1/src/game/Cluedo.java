@@ -32,18 +32,21 @@ public class Cluedo {
     players.add(new Player("Eleanor Peacock"  ));
     players.add(new Player("Victor Plum"      ));
 
-    playerCount = 3; // TODO: Input for this
+    playerCount = 0;
+    while (playerCount < 3) {
+      System.out.println("how many players? (3-6)");
+      playerCount = makeSelection(6);
+    }
     
     // spawn our players
     for (int i=0; i<playerCount; ++i)
-      players.get(i).moveToTile(board.playerSpawns.get(i));
+      players.get(i).spawn(board.playerSpawns.get(i));
     
     currentPlayer = players.get(0);
     currentPlayer.newTurn();
   }
   
   public void mainLoop() {
-    Scanner lineScan = new Scanner(System.in);
     while (running) {
       
       // if it's the next players turn
@@ -61,11 +64,27 @@ public class Cluedo {
       currentPlayer.listActions();
       
       // ask for actions until we get a valid action execution 
-      Scanner s = new Scanner(lineScan.nextLine());
-      while ((!s.hasNextInt()) || (! currentPlayer.doAction(s.nextInt()))) {
-        System.out.println("Enter a valid action number");
-        s = new Scanner(lineScan.nextLine());
-      }
+      currentPlayer.doAction(makeSelection(currentPlayer.actionCount()));
     }
+  }
+  
+  /**
+   * Reads lines from System.in until we get a number that is 0 <= n <= max
+   * @return The selection
+   */
+  public static int makeSelection(int max) {
+    Scanner lineScan = new Scanner(System.in);
+    
+    Scanner s = new Scanner(lineScan.nextLine());
+    int ret = -1; // our return value
+    if (s.hasNextInt()) ret = s.nextInt();
+    while (ret<0 || ret>max) {
+      System.out.println("Enter a valid selection. (0-" + max + ")");
+      s = new Scanner(lineScan.nextLine());
+      if (! s.hasNextInt()) continue;
+      ret = s.nextInt();
+    }
+    
+    return ret;
   }
 }

@@ -14,7 +14,6 @@ public class TileTests {
   public void test_canMoveHere() {
     test_canMoveHere_FloorTile(new FloorTile("."));
     test_canMoveHere_FloorTile(new RoomEntrance(3));
-    
   }
   
   private void test_canMoveHere_FloorTile(FloorTile t) {
@@ -22,10 +21,10 @@ public class TileTests {
     Player b = new Player("bob");
     assertTrue(t.canMoveHere(a));
     assertTrue(t.canMoveHere(b));
-    a.moveToTile(t);  // move alice onto the tile
+    a.spawn(t);  // move alice onto the tile
     assertTrue(t.canMoveHere(a));
     assertFalse(t.canMoveHere(b));
-    a.moveToTile(new FloorTile(".")); // move alice away
+    t.leave(a); // move alice away
     assertTrue(t.canMoveHere(a));
     assertTrue(t.canMoveHere(b));
   }
