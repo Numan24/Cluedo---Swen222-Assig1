@@ -30,4 +30,8 @@ public class Suggestion {
       room.equals(  other.room  )
     );
   }
+  
+  public String toString() {
+    return player + " wtih " + weapon + " in the " + room;
+  }
 }

@@ -88,8 +88,11 @@ public class Board {
                 break;
               case 'R': // Room
                 int roomID = Integer.parseInt(token.substring(1));
-                rooms.put(roomID, new Room());
-                newTile = rooms.get(roomID);
+                Room newRoom;
+                if (roomID==5) newRoom = new AccusationRoom();
+                else           newRoom = new Room();
+                rooms.put(roomID, newRoom);
+                newTile = newRoom;
                 break;
               default:
                 System.out.println("Unknown Tile: " + token.charAt(0));

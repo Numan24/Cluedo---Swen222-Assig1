@@ -20,6 +20,8 @@ public class Cluedo {
   private int currentPlayerID = 0;
   private int playerCount;
   
+  private Suggestion solution;
+  
   private Board board;
   
   private boolean running = true;
@@ -46,6 +48,34 @@ public class Cluedo {
     }
     while (players.size() > playerCount) // remove all unused characters
       players.remove(players.size()-1);
+    
+    // deal out cards
+    List<String> murderers = playerNames();
+    List<String> weapons   = new LinkedList<String>(Board.weapons);
+    List<String> roomNames = new LinkedList<String>(Board.roomNames.values());
+    Collections.shuffle(murderers);
+    Collections.shuffle(weapons  );
+    Collections.shuffle(roomNames);
+    
+    // create the solution
+    solution = new Suggestion(
+      murderers.remove(0),
+      weapons.remove(0),
+      roomNames.remove(0)
+    );
+    
+    System.out.println(solution);
+    
+    // deal out all other cards to your players
+    List<String> remainingCards = new ArrayList<String>();
+    remainingCards.addAll(murderers);
+    remainingCards.addAll(weapons);
+    remainingCards.addAll(roomNames);
+    int playerID = 0;
+    for (String card : remainingCards) { 
+      players.get(playerID).addCard(card);
+      playerID = (playerID+1)%playerCount; 
+    }
     
     // spawn our players
     for (int i=0; i<playerCount; ++i)
@@ -77,26 +107,67 @@ public class Cluedo {
       currentPlayer.listActions();
       
       // ask for actions until we get a valid action execution 
-      currentPlayer.doAction(makeSelection(currentPlayer.actionCount()));
+      currentPlayer.doAction(makeSelection(currentPlayer.actionCount()-1));
     }
   }
   
   
   /* =========== Other methods =========== */
 
+  private List<String> playerNames() {
+    List<String> playerNames = new ArrayList<String>();
+    for (Player p : players) playerNames.add(p.name());
+    return playerNames;
+  }
+  
+  public void makeAccusation(Player accuser) {
+    Suggestion accusation = new Suggestion(
+      askQuestion("Who was the murderer?", playerNames()),
+      askQuestion("What was the murder weapon?", Board.weapons),
+      askQuestion("In which room was the murder in?", new LinkedList<String>(Board.roomNames.values()))
+    );
+    
+    // build suspense
+    System.out.print("You were");
+    for (int i=0; i<5; ++i) {
+      System.out.print(".");
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) { }
+    }
+    
+    // result
+    if (accusation.equals(solution)) {
+      // accuser wins 
+      System.out.println(" right!");
+      System.out.println(accuser.name()+ " wins the game!");
+      running = false;
+    }
+    else {
+      // Accuser dies! :o
+      System.out.println(" wrong!");
+      System.out.println(accuser.name()+ " dies of shame.");
+      currentPlayer.doAction(0); // consume the rest of the turn
+      players.remove(accuser);
+      --playerCount;
+      
+      if (playerCount == 0) { // if everybody died, end the game
+        System.out.println("Nobody could figure that it was " + solution);
+        running = false;
+      }
+    }
+  }
   
   public void makeSuggestion(Player suggestor) {
     // prepare the suggestion
-    List<String> playerNames = new ArrayList<String>();
-    for (Player p : players) playerNames.add(p.name());
-    String roomName = "some room";
+    String roomName = "some room"; // this one should never happen
     for (int i=0; i<Board.roomNames.size(); ++i)
       if (board.rooms.get(i) == suggestor.position()) // assumes a player is in a room
         roomName = Board.roomNames.get(i);
     
     // create the suggestion
     Suggestion s = new Suggestion(
-      askQuestion("Who was the murderer?", playerNames),
+      askQuestion("Who was the murderer?", playerNames()),
       askQuestion("What was the murder weapon?", Board.weapons),
       roomName // since we're not allowed to choose anything else
     );
@@ -105,13 +176,14 @@ public class Cluedo {
     for (Player refutor : players) {
       String refuteReason = refutor.refute(s);
       if (! refuteReason.equals("")) {
-        System.out.println(refutor.name() + " can refute the " + refuteReason);
+        System.out.println(refutor.name() + " can refute the murder " + refuteReason);
+        waitForNewLine();
         return;
       }
-      System.out.println(refutor.name() + " can't refute this suggestion.");
+      //System.out.println(refutor.name() + " can't refute this suggestion.");
     }
-    System.out.println("No one can refute this suggestion.  [press enter]");
-    new Scanner(System.in).nextLine(); // wait for a enter-press
+    System.out.println("No one can refute this suggestion.");
+    waitForNewLine();
   }
   
   public static String askQuestion(String Question, List<String> answers) {
@@ -121,6 +193,12 @@ public class Cluedo {
       System.out.println("[" + (i++) + "] " + answer);
     
     return answers.get(makeSelection(answers.size())); // note: calls the method below
+  }
+  
+  /** Utility: pauses the game until enter is pressed */
+  public static void waitForNewLine() {
+    System.out.println("[press enter]");
+    new Scanner(System.in).nextLine(); // wait for new line
   }
   
   /**
