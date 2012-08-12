@@ -97,8 +97,8 @@ public class Cluedo {
     // create the suggestion
     Suggestion s = new Suggestion(
       askQuestion("Who was the murderer?", playerNames),
-      roomName,
-      askQuestion("What was the murder weapon?", Board.weapons)
+      askQuestion("What was the murder weapon?", Board.weapons),
+      roomName // since we're not allowed to choose anything else
     );
     
     // now check of any people who can refute this suggestion
@@ -108,6 +108,7 @@ public class Cluedo {
         System.out.println(refutor.name() + " can refute the " + refuteReason);
         return;
       }
+      System.out.println(refutor.name() + " can't refute this suggestion.");
     }
     System.out.println("No one can refute this suggestion.  [press enter]");
     new Scanner(System.in).nextLine(); // wait for a enter-press

@@ -20,6 +20,7 @@ public class Room extends Tile {
     if (! movePlayer(p)) return false;
     
     if (
+      // (yes/no question) == yes
       Cluedo.askQuestion("do you want to make a murder suggestion?", Arrays.asList("No", "Yes"))
       .equals("Yes")
     ) {
