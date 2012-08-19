@@ -105,12 +105,6 @@ public class Board {
     }
     catch (IOException e) { e.printStackTrace(); }
     
-    // add weapons to rooms
-    for (int i=0; i<weapons.size(); ++i) {
-      int roomID = i;
-      if (i >= 5) ++roomID; // the center room doesn't have a weapon
-    }
-    
     // add connections between rooms/entrances
     for (RoomEntrance e : roomEntrances.values()) {
       Room r = rooms.get(e.getRoomID());

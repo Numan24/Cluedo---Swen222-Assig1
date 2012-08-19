@@ -147,7 +147,7 @@ public class Player {
   }
   
   /** Consumes a turn */
-  class Action_Idle extends Action{
+  class Action_Idle extends Action {
     public void execute() {   movesLeft = 0;  }
     public String toString() { return "Idle  (ends turn)"; }
   } 

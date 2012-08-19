@@ -64,7 +64,8 @@ public class Cluedo {
       roomNames.remove(0)
     );
     
-    System.out.println(solution);
+    // DEBUG: show the solution at the start
+    //System.out.println(solution);
     
     // deal out all other cards to your players
     List<String> remainingCards = new ArrayList<String>();
