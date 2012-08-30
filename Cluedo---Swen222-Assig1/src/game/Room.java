@@ -21,8 +21,9 @@ public class Room extends Tile {
     
     if (
       // (yes/no question) == yes
-      Cluedo.askQuestion("do you want to make a murder suggestion?", Arrays.asList("No", "Yes"))
-      .equals("Yes")
+      //Cluedo.askQuestion("do you want to make a murder suggestion?", Arrays.asList("No", "Yes"))
+      //.equals("Yes")
+      Controller.makeGraphicalYesNoSelection("do you want to make a murder suggestion?")
     ) {
       game.makeSuggestion(p);
     }

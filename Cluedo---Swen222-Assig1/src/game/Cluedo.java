@@ -2,6 +2,8 @@ package game;
 
 import java.util.*;
 
+import javax.swing.JOptionPane;
+
 
 /**
  * The class that pulls the game elements together
@@ -41,11 +43,14 @@ public class Cluedo {
     players.add(new Player("Eleanor Peacock"  , this));
     players.add(new Player("Victor Plum"      , this));
 
+    /*
     playerCount = 0;
     while (playerCount < 3) {
       System.out.println("how many players? (3-6)");
       playerCount = makeSelection(6);
     }
+    */
+    playerCount = Controller.makeGraphicalSelection("How many players? (3-6)", 3, 6);
     while (players.size() > playerCount) // remove all unused characters
       players.remove(players.size()-1);
     
@@ -87,7 +92,7 @@ public class Cluedo {
   }
   
   
-  /* =========== Game main loop =========== */
+  /* =========== Game main loop (for text-based version) =========== */
 
   
   public void mainLoop() {
@@ -123,9 +128,14 @@ public class Cluedo {
   
   public void makeAccusation(Player accuser) {
     Suggestion accusation = new Suggestion(
+      /* // non-graphical code
       askQuestion("Who was the murderer?", playerNames()),
       askQuestion("What was the murder weapon?", Board.weapons),
       askQuestion("In which room was the murder in?", new LinkedList<String>(Board.roomNames.values()))
+      */
+      Controller.makeGraphicalSelection("Who was the murderer?", playerNames()),
+      Controller.makeGraphicalSelection("What was the murder weapon?", Board.weapons),
+      Controller.makeGraphicalSelection("In which room was the murder in?", new LinkedList<String>(Board.roomNames.values()))
     );
     
     // build suspense
@@ -193,7 +203,7 @@ public class Cluedo {
     for (String answer : answers)
       System.out.println("[" + (i++) + "] " + answer);
     
-    return answers.get(makeSelection(answers.size())); // note: calls the method below
+    return answers.get(makeSelection(answers.size()-1)); // note: calls the method below
   }
   
   /** Utility: pauses the game until enter is pressed */
@@ -220,5 +230,29 @@ public class Cluedo {
     }
     
     return ret;
+  }
+  
+  
+  // ============= things for the GUI from here on =================
+  
+  // getters
+  public Player currentPlayer() {  return currentPlayer; }
+  public Board board() { return board; }
+  
+  public void nextTurn() {
+  //if it's the next players turn
+    if (currentPlayer.movesLeft() <= 0) {
+      currentPlayer.setSelected(false);
+      currentPlayerID = (currentPlayerID + 1) % playerCount;
+      currentPlayer = players.get(currentPlayerID);
+      currentPlayer.newTurn();
+    }
+    /*
+    System.out.print("\n\n\n\n\n");
+    System.out.print(board.toString());
+    System.out.println("It's " +currentPlayer.name()+ " turn. " +currentPlayer.movesLeft()+ " moves left.");
+    */
+    
+    currentPlayer.computeActions();
   }
 }

@@ -1,6 +1,9 @@
 package game;
 
+import java.awt.Color;
 import java.util.*;
+
+import org.hamcrest.core.IsInstanceOf;
 
 
 public class Player {
@@ -19,6 +22,8 @@ public class Player {
   
   private List<Action> availableActions = new ArrayList<Action>();
 
+  public Color colour = new Color(255, 0, 0);
+  
   private List<String> cards = new ArrayList<String>();
   public void addCard(String card) { cards.add(card); }
   
@@ -27,7 +32,7 @@ public class Player {
   private int movesLeft = 0;
   public int movesLeft() { return movesLeft; }
   public void newTurn() {
-    movesLeft = (int)(6.0 * Math.random()) + 1; // 6-sided dice roll
+    movesLeft = (int)(60.0 * Math.random()) + 1; // 6-sided dice roll
     setSelected(true);
   }
   
@@ -110,6 +115,17 @@ public class Player {
     return true;
   }
   
+  /** returns the tiles that the player can move to (associated by their action number) */
+  public Map<Integer, Tile> getAvailableTiles() {
+    Map<Integer, Tile> ret = new HashMap<Integer, Tile>();
+    for (int i=0; i<availableActions.size(); ++i) {
+      if (availableActions.get(i) instanceof Action_Move) { // fuuuuuuuuuuu
+        Action_Move a = (Action_Move)availableActions.get(i);
+        ret.put(i, a.to);
+      }
+    }
+    return ret;
+  }
   
   // =========== Player-Actions from here on ===========
   
@@ -122,7 +138,7 @@ public class Player {
   }
   
   private class Action_Move extends Action {
-    Tile to;
+    public Tile to;
     String description;
     
     Action_Move(Tile to, String description) {

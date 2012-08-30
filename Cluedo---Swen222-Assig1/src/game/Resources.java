@@ -13,7 +13,7 @@ public class Resources {
   
   public static void load() {
     try {
-      board = ImageIO.read(new File("board.jpg"));
+      board = ImageIO.read(new File("board_adjusted.png"));
 
     } catch (IOException e) { throw new Error(e); }
   }

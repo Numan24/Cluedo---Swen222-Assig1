@@ -1,7 +1,10 @@
 package game;
 
+import java.awt.Point;
 import java.io.*;
 import java.util.*;
+
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 /** 
  * Keeps information about what the players can interact with
@@ -174,5 +177,25 @@ public class Board {
       ret += '\n';
     }
     return ret;
+  }
+  
+  /** returns the x/y coordinate of the given tile */
+  public Point getTileCoordinates(Tile tile) {
+    if (tile == null) throw new NullPointerException();
+    
+    Point p = new Point();
+    for (List<Tile> row : board) {
+      for (Tile t : row) {
+        if (tile == t)
+          return p;
+        p.x += 1;
+      }
+      p.y += 1;
+      p.x = 0;
+    }
+    
+    if (!isInBounds(p.y, p.x)) throw new NoSuchElementException();
+    
+    return p;
   }
 }

@@ -3,9 +3,6 @@ package game;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -13,11 +10,17 @@ import javax.swing.*;
 
 public class GUI implements Runnable {
   
-  private List<JButton> s = new ArrayList<JButton>();
+  JFrame frame;
   
-  public final int tileSize = 20;
+  private JComponent gameArea;
+  private List<JButton> moveButtons = new ArrayList<JButton>();
   
-  public GUI() {
+  public final int tileSize = 16;
+  
+  private Cluedo game;
+  
+  public GUI(Cluedo game) {
+    this.game = game;
     // set system native look and feel
     try {
       //UIManager.setLookAndFeel(   UIManager.getSystemLookAndFeelClassName());
@@ -25,35 +28,49 @@ public class GUI implements Runnable {
   }
   
   public void run() {
-    
-    JFrame f = new JFrame("Cluedo");
-    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    f.setLayout(new BorderLayout());
-    createMenuBar(f);
-    createGameComponent(f);
-    //f.add(new JLabel("Hello, world!"), BorderLayout.CENTER);
-    //JButton b = new JButton("Press me!");
-    //f.add(b, BorderLayout.SOUTH);
-    f.pack();
-    f.setVisible(true);
+    game.nextTurn();
+
+    frame = new JFrame("Cluedo");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setLayout(new BorderLayout());
+    createMenuBar(frame);
+    createGameComponent(frame);
+    redraw();
+    frame.pack();
+    frame.setResizable(false);
+    frame.setVisible(true);
   }
 
+  private void redraw() {
+    createTileButtons(game.currentPlayer().getAvailableTiles());
+    frame.repaint();
+  }
+  
   private void createGameComponent(JFrame f) {
     //JPanel gameView = new JPanel(new BorderLayout());
     ImagePanel p = new ImagePanel(Resources.board);
+    gameArea = p;
     p.setLayout(null);
     p.addMouseListener(Controller.controller);
     f.add(p, BorderLayout.CENTER);
-
-    createGameButtons(p);
   }
   
-  private void createGameButtons(JComponent c) {
-    JButton b = new ActionButton(3); // TODO
+  private void createTileButtons(Map<Integer, Tile> tiles) {
+    // remove all buttons
+    for (JButton b : moveButtons)
+      gameArea.remove(b);
+    moveButtons.clear();
     
-    Insets insets = c.getInsets();
-    c.setBounds(0 + insets.left, 0 + insets.top,  20, 20);
-    c.add(b);
+    // create the new ones
+    for (Integer i : tiles.keySet()) {
+      Point coords = game.board().getTileCoordinates(tiles.get(i));
+
+      JButton b = new ActionButton(i);
+      Insets insets = gameArea.getInsets();
+      b.setBounds(insets.left + coords.x*tileSize, insets.top + coords.y*tileSize,  tileSize, tileSize);
+      gameArea.add(b);
+      moveButtons.add(b);
+    }
   }
 
   private void createMenuBar(JFrame f) {
@@ -110,28 +127,25 @@ public class GUI implements Runnable {
     
     
     public ActionButton(final int actionNumber) {
-      super("!");
+      super();
       
       addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent arg0) {
-          System.out.println("hi: " + actionNumber);
+          game.currentPlayer().doAction(actionNumber);
+          game.nextTurn();
+          game.currentPlayer().position();
+          redraw();
         }
       });
       
 
-      setOpaque(false);
-      setContentAreaFilled(false);
-      
+      //setOpaque(false);
+      //setContentAreaFilled(false);
       //setBorderPainted(false);
+
+      setBackground(new Color(0, 0, 0, 100)); // semi-transparent
+
     }
-    /*
-    @Override
-    public void paint(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0));
-        super.paint(g2);
-        g2.dispose();
-    }*/
   }
 }
