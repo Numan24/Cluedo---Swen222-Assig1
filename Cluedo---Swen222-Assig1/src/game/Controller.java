@@ -29,10 +29,14 @@ public class Controller implements MouseListener {
   // ============= functions for pop-up boxes from here ===============
   
   public static int makeGraphicalSelection(String prompt, int min, int max) {
+    String title = prompt;
+    if (title.contains("\n"))
+      title = title.substring(0, title.indexOf('\n'));
+    
     if (min < 0 || max<min) throw new IllegalArgumentException(); // we're not designed for this 
     int out = -1;
     while (out<min || out>max) {
-      String in = JOptionPane.showInputDialog(null, prompt, prompt, 1);
+      String in = JOptionPane.showInputDialog(null, prompt, title, 1);
       if (in==null) continue;
       try {
         out = Integer.parseInt(in);
@@ -44,13 +48,16 @@ public class Controller implements MouseListener {
   public static String makeGraphicalSelection(String prompt, List<String> answers) {
     int i=0;
     for (String answer : answers)
-      prompt += "[" + (i++) + "] " + answer;
+      prompt += "\n[" + (i++) + "] " + answer;
     
     return answers.get(makeGraphicalSelection(prompt, 0, answers.size()-1)); // note: calls the method below
   }
   
+  public static void infoBox(String info) {
+    JOptionPane.showMessageDialog(null, info);
+  }
+  
   public static boolean makeGraphicalYesNoSelection(String prompt) {
-    System.out.println(JOptionPane.YES_OPTION + " " + JOptionPane.NO_OPTION);
     int answer = -1;
     while (answer != JOptionPane.YES_OPTION && answer != JOptionPane.NO_OPTION) {
       answer = JOptionPane.showConfirmDialog(null, prompt, prompt, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

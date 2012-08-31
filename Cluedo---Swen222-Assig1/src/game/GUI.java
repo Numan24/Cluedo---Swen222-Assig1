@@ -35,10 +35,10 @@ public class GUI implements Runnable {
     frame.setLayout(new BorderLayout());
     createMenuBar(frame);
     createGameComponent(frame);
-    redraw();
     frame.pack();
     frame.setResizable(false);
     frame.setVisible(true);
+    redraw();
   }
 
   private void redraw() {

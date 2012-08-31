@@ -138,32 +138,44 @@ public class Cluedo {
       Controller.makeGraphicalSelection("In which room was the murder in?", new LinkedList<String>(Board.roomNames.values()))
     );
     
+    /*
+    System.out.print("You were ...");
     // build suspense
-    System.out.print("You were");
     for (int i=0; i<5; ++i) {
       System.out.print(".");
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) { }
     }
+    */
+
+    Controller.infoBox("You were ...");
+    Controller.infoBox("..");
+    Controller.infoBox("...");
+    Controller.infoBox("SUSPENSE!  IMMERSION!"); // some silliness allowed
+    Controller.infoBox("...");
     
     // result
     if (accusation.equals(solution)) {
       // accuser wins 
-      System.out.println(" right!");
-      System.out.println(accuser.name()+ " wins the game!");
+      //System.out.println(" right!");
+      //System.out.println(accuser.name()+ " wins the game!");
+
+      Controller.infoBox("..RIGHT!\n" +accuser.name()+ " wins the game!");
       running = false;
     }
     else {
       // Accuser dies! :o
-      System.out.println(" wrong!");
-      System.out.println(accuser.name()+ " dies of shame.");
+      //System.out.println(" wrong!");
+      //System.out.println(accuser.name()+ " dies of shame.");
+      Controller.infoBox("..WRONG!\n" +accuser.name()+ " dies of shame.");
       currentPlayer.doAction(0); // consume the rest of the turn
       players.remove(accuser);
       --playerCount;
       
       if (playerCount == 0) { // if everybody died, end the game
-        System.out.println("Nobody could figure that it was " + solution);
+        //System.out.println("Nobody could figure that it was " + solution);
+        Controller.infoBox("Nobody could figure that it was " + solution);
         running = false;
       }
     }
@@ -178,8 +190,10 @@ public class Cluedo {
     
     // create the suggestion
     Suggestion s = new Suggestion(
-      askQuestion("Who was the murderer?", playerNames()),
-      askQuestion("What was the murder weapon?", Board.weapons),
+      //askQuestion("Who was the murderer?", playerNames()),
+      //askQuestion("What was the murder weapon?", Board.weapons),
+      Controller.makeGraphicalSelection("Who was the murderer?", playerNames()),
+      Controller.makeGraphicalSelection("What was the murder weapon?", Board.weapons),
       roomName // since we're not allowed to choose anything else
     );
     
@@ -187,14 +201,16 @@ public class Cluedo {
     for (Player refutor : players) {
       String refuteReason = refutor.refute(s);
       if (! refuteReason.equals("")) {
-        System.out.println(refutor.name() + " can refute the murder " + refuteReason);
-        waitForNewLine();
+        //System.out.println(refutor.name() + " can refute the murder " + refuteReason);
+        //waitForNewLine();
+        Controller.infoBox(refutor.name() + " can refute the murder " + refuteReason);
         return;
       }
       //System.out.println(refutor.name() + " can't refute this suggestion.");
     }
-    System.out.println("No one can refute this suggestion.");
-    waitForNewLine();
+//    System.out.println("No one can refute this suggestion.");
+//    waitForNewLine();
+    Controller.infoBox("No one can refute this suggestion.");
   }
   
   public static String askQuestion(String Question, List<String> answers) {

@@ -8,8 +8,9 @@ public class AccusationRoom extends Room {
     
     if (
       // (yes/no question) == yes
-      Cluedo.askQuestion("do you want to make a murder ACCUSATION?", Arrays.asList("No", "Yes"))
-      .equals("Yes")
+      //Cluedo.askQuestion("do you want to make a murder ACCUSATION?", Arrays.asList("No", "Yes"))
+      //.equals("Yes")
+      Controller.makeGraphicalYesNoSelection("do you want to make a murder suggestion?")
     ) {
       game.makeAccusation(p);
     }

@@ -32,7 +32,7 @@ public class Player {
   private int movesLeft = 0;
   public int movesLeft() { return movesLeft; }
   public void newTurn() {
-    movesLeft = (int)(60.0 * Math.random()) + 1; // 6-sided dice roll
+    movesLeft = (int)(6.0 * Math.random()) + 100; // 6-sided dice roll FIXME
     setSelected(true);
   }
   
@@ -90,8 +90,6 @@ public class Player {
       if (neighbour.canMoveHere(this))
         availableActions.add(new Action_Move(neighbour, description));
     }
-    
-    // TODO: room actions
   }
   
   /** Prints out all possible actions in a nice user-readable way */
