@@ -13,10 +13,13 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Main {
   public static void main(String[] args) {
+    
     Cluedo game = new Cluedo();
     //game.mainLoop();
     Resources.load();
 
-    SwingUtilities.invokeLater(new GUI(game));
+    GUI gui = new GUI(game);
+    SwingUtilities.invokeLater(gui);
+    gui.animate();
   }
 }

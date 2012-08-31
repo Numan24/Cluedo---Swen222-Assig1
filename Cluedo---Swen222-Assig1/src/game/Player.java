@@ -99,6 +99,10 @@ public class Player {
       System.out.println("[" + (i++) + "] " + action);
   }
   
+  public String getActionDescription(int index) {
+    return availableActions.get(index).toString();
+  }
+  
   /** @return The number of current possible actions  */
   public int actionCount() { return availableActions.size(); }
   
