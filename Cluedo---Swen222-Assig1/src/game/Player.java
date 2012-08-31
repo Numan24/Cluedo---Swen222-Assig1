@@ -32,7 +32,7 @@ public class Player {
   private int movesLeft = 0;
   public int movesLeft() { return movesLeft; }
   public void newTurn() {
-    movesLeft = (int)(6.0 * Math.random()) + 100; // 6-sided dice roll FIXME
+    movesLeft = (int)(6.0 * Math.random()) + 1; // 6-sided dice roll
     setSelected(true);
   }
   
